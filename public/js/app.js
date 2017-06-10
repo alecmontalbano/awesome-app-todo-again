@@ -40,6 +40,9 @@ const TodoApp = {
     //clear input
     this.taskInput.value = '';
   },
+  liAdd: function(todo){
+    return `<li>${todo.task}<button class='delete'>x</button></li>`;
+  },
   cacheDeleteButtons: function(){
     this.deleteButtons = this.root.querySelectorAll('.delete');
   },
@@ -54,7 +57,7 @@ const TodoApp = {
   },
   render: function(){
     const lis = this.todos
-                    .map(todo => `<li>${todo.task}<button class='delete'>x</button></li>`)
+                    .map(this.liAdd)
                     .join('');
     this.todoList.innerHTML = lis;
     this.cacheDeleteButtons();
