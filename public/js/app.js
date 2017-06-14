@@ -40,8 +40,24 @@ const TodoApp = {
     //clear input
     this.taskInput.value = '';
   },
-  liAdd: function(todo){
-    return `<li>${todo.task}<button class='delete'>x</button></li>`;
+  cacheCheckboxes: function(){
+    this.checkboxes = this.root.querySelectorAll('.checkbox');
+  },
+  setCheckedState: function (){
+    this.checkboxes.forEach((box, index)=> {
+      const todo = this.todos[index];
+      box.checked = todo.isComplete;
+    });
+  },
+  bindCheckboxEvents: function(){
+    this.checkboxes.forEach((box, index) => {
+      box.addEventListener('click', () => this.strikeTodo(index));
+    });
+  },
+  strikeTodo: function(index){
+    const todo = this.todos[index];
+    todo.isComplete = !todo.isComplete;
+    this.render();
   },
   cacheDeleteButtons: function(){
     this.deleteButtons = this.root.querySelectorAll('.delete');
@@ -55,13 +71,36 @@ const TodoApp = {
     this.todos.splice(index, 1);
     this.render();
   },
+  renderTasks: function(){
+    this.todos.map(todo => {
+      const lis = document.createElement('li');
+      lis.textContent = `${todo.task}`;
+      lis.className = 'todo-task';
+      this.todoList.appendChild(lis);
+
+      const deleteButton = document.createElement('button');
+      deleteButton.className = 'delete';
+      lis.appendChild(deleteButton);
+
+      const checkbox = document.createElement('input');
+      checkbox.setAttribute('type', 'checkbox');
+      checkbox.className = 'checkbox';
+      lis.prepend(checkbox);
+
+      if (todo.isComplete === true) {
+        lis.style.textDecoration = 'line-through';
+        checkbox.setAttribute('checked', 'true');
+      }
+    });
+  },
   render: function(){
-    const lis = this.todos
-                    .map(this.liAdd)
-                    .join('');
-    this.todoList.innerHTML = lis;
+    this.todoList.innerHTML = '';
+    this.renderTasks();
     this.cacheDeleteButtons();
     this.bindDeleteEvents();
+    this.cacheCheckboxes();
+    this.setCheckedState();
+    this.bindCheckboxEvents();
   }
 };
 
